@@ -2,10 +2,12 @@ import changeScene from './functions/changeScene.js'
 import startScreen from './objects/startScreen.js'
 import flappyBirdInit from './objects/flappyBird.js'
 import background from './objects/background.js'
-import floor from './objects/floor.js'
+import floorInit from './objects/floor.js'
+import tubesInit from './objects/tubes.js'
 
 window.currentScene = {}
 window.globals = {}
+window.frames = 0
 
 var game = () => {
   const sprites = new Image()
@@ -20,29 +22,35 @@ var game = () => {
     startScene: {
       init() {
         window.globals.flappyBird = flappyBirdInit()
+        window.globals.floor = floorInit()
+        window.globals.tubes = tubesInit()
       },
       draw() {
         background.draw(ctx, sprites)
-        floor.draw(ctx, sprites)
         window.globals.flappyBird.draw(ctx, sprites)
+        window.globals.floor.draw(ctx, sprites)
         startScreen.draw(ctx, sprites)
       },
       click() {
         changeScene(scenes.gameScene)
       },
-      update() {}
+      update() {
+      }
     },
     gameScene: {
       draw() {
         background.draw(ctx, sprites)
-        floor.draw(ctx, sprites)
+        window.globals.tubes.draw(ctx, sprites)
+        window.globals.floor.draw(ctx, sprites)
         window.globals.flappyBird.draw(ctx, sprites)
       },
       click() {
         window.globals.flappyBird.fly()
       },
       update() {
-        window.globals.flappyBird.update(gravity, floor, scenes)
+        window.globals.floor.update()
+        window.globals.flappyBird.update(gravity, window.globals.floor, scenes)
+        window.globals.tubes.update(window.globals.flappyBird, scenes)
       }
     }
   }
@@ -51,6 +59,7 @@ var game = () => {
     window.currentScene.draw()
     window.currentScene.update()
 
+    window.frames++
     requestAnimationFrame(gameLoop)
   }
 
